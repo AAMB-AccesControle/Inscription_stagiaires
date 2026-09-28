@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formulaire Stagiaire - AAMB JTB 2026 v0.01</title>
+<link rel="manifest" href="manifest_stagiaire.json">
+<meta name="theme-color" content="#0a4c6a">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+/* --- Mêmes styles que la version partenaire pour garder la cohérence --- */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #0a4c6a 0%, #2e5b70 100%); min-height: 100vh; padding: 20px; }
+.container { max-width: 900px; margin: 0 auto; background: white; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); overflow: hidden; }
+.header { background: linear-gradient(135deg, #0a4c6a 0%, #1a3a4b 100%); color: white; padding: 30px; text-align: center; }
+.header-logo-wrapper { background: white; display: inline-block; padding: 12px 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); margin-bottom: 15px; }
+.header-logo-wrapper img { max-width: 140px; height: auto; display: block; }
+.header h1 { font-size: 28px; margin-bottom: 8px; }
+.header .subtitle { font-size: 14px; opacity: 0.9; }
+.form-container { padding: 40px; }
+.section { display: none; animation: fadeIn 0.5s; }
+.section.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.section-title { color: #0a4c6a; font-size: 24px; margin-bottom: 25px; padding-bottom: 10px; border-bottom: 3px solid #4a8b38; }
+.form-group { margin-bottom: 20px; }
+label { display: block; color: #333; font-weight: 600; margin-bottom: 8px; font-size: 14px; }
+.required::after { content: " *"; color: #e74c3c; }
+input[type="text"], input[type="email"], input[type="tel"], input[type="number"], select, textarea { width: 100%; padding: 12px 15px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; transition: border-color 0.3s; font-family: inherit; }
+input:focus, select:focus, textarea:focus { outline: none; border-color: #0a4c6a; }
+.sub-section { background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #0a4c6a; }
+.sub-section-title { color: #0a4c6a; font-size: 18px; font-weight: 600; margin-bottom: 15px; }
+.person-group { background: white; padding: 15px; border-radius: 6px; margin-bottom: 15px; border: 1px solid #ddd; position: relative; }
+.person-title { font-weight: 600; color: #0a4c6a; margin-bottom: 10px; font-size: 16px; }
+.btn-remove { position: absolute; top: 10px; right: 10px; background: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+.inline-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+.price-info { background: #e8f4fd; border: 1px solid #2d5a87; color: #1e3a5f; padding: 15px; border-radius: 6px; margin-bottom: 15px; font-size: 14px; }
+.price-info strong { color: #e74c3c; }
+.buttons { display: flex; justify-content: space-between; margin-top: 30px; gap: 15px; }
+button { padding: 14px 30px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+.btn-primary { background: linear-gradient(135deg, #0a4c6a 0%, #2e5b70 100%); color: white; }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(10, 76, 106, 0.4); }
+.btn-secondary { background: #6c757d; color: white; }
+.btn-add { background: #4a8b38; color: white; width: 100%; margin-top: 10px; }
+.progress-bar { background: #e9ecef; height: 8px; margin-bottom: 30px; border-radius: 4px; overflow: hidden; }
+.progress-fill { background: linear-gradient(90deg, #0a4c6a 0%, #4a8b38 100%); height: 100%; transition: width 0.3s; }
+.recap-total { background: linear-gradient(135deg, #0a4c6a 0%, #1a3a4b 100%); color: white; padding: 20px; border-radius: 8px; margin-top: 20px; display: flex; justify-content: space-between; align-items: center; font-size: 20px; }
+.recap-total-value { font-size: 28px; font-weight: bold; }
+.checkbox-item { display: flex; align-items: flex-start; gap: 10px; background: #f8f9fa; padding: 15px; border-radius: 6px; border: 2px solid #e9ecef; cursor: pointer; margin-bottom: 10px; }
+.checkbox-item input { width: 20px; height: 20px; margin-top: 2px; }
+#bonDeCommande { position: absolute; left: -9999px; top: 0; width: 750px; background: white; padding: 20px; font-family: 'Segoe UI', Arial, sans-serif; color: #333; font-size: 11px; }
+/* ... (Garder les styles du PDF #bonDeCommande identiques à la version partenaire) ... */
+</style>
+</head>
+<body>
+
+<div class="container">
+<div class="header">
+<div class="header-logo-wrapper"><img src="logo-aamb.png" alt="Logo AAMB"></div>
+<h1>AAMB - JTB 2026 - Besançon</h1>
+<p class="subtitle">Formulaire d'Inscription Stagiaire</p>
+</div>
+<div class="form-container">
+<div class="progress-bar"><div class="progress-fill" id="progressBar" style="width: 25%"></div></div>
+<form id="stagiaireForm">
+
+<!-- SECTION 1: ÉTABLISSEMENT & FACTURATION -->
+<div class="section active" id="section1">
+<h2 class="section-title">🏢 Établissement & Facturation</h2>
+<div class="price-info">
+<strong>Information importante :</strong> La facturation est dématérialisée. Pour les établissements publics, merci de préparer votre numéro de commande et votre numéro SIRET pour le portail CHORUS PRO.
+</div>
+<div class="sub-section">
+<div class="sub-section-title">Informations de l'établissement</div>
+<div class="inline-fields">
+<div class="form-group"><label class="required">Nom de l'établissement</label><input type="text" name="companyName" required></div>
+<div class="form-group"><label class="required">Adresse postale</label><input type="text" name="billingAddress" required></div>
+<div class="form-group"><label class="required">Code Postal</label><input type="text" name="billingZip" required></div>
+<div class="form-group"><label class="required">Ville</label><input type="text" name="billingCity" required></div>
+<div class="form-group"><label class="required">N° SIRET</label><input type="text" name="billingSiret" required></div>
+<div class="form-group"><label>N° de Commande (Chorus Pro)</label><input type="text" name="billingOrderNum"></div>
+<div class="form-group"><label>Code Service</label><input type="text" name="billingServiceCode"></div>
+</div>
+</div>
+<div class="sub-section">
+<div class="sub-section-title">Contact pour la facturation</div>
+<div class="inline-fields">
+<div class="form-group"><label class="required">Nom du référent</label><input type="text" name="billingContactName" required></div>
+<div class="form-group"><label class="required">Email du référent</label><input type="email" name="billingContactEmail" required></div>
+<div class="form-group"><label>Téléphone</label><input type="tel" name="billingContactPhone"></div>
+</div>
+</div>
+<div class="buttons">
+<button type="button" class="btn-primary" onclick="nextSection(1)">Continuer vers les Stagiaires →</button>
+</div>
+</div>
+
+<!-- SECTION 2: LES STAGIAIRES -->
+<div class="section" id="section2">
+<h2 class="section-title">👥 Les Stagiaires</h2>
+<div class="price-info" id="priceInfoBox">
+<strong>Tarif 2026 :</strong> <span id="currentPrice">700,00 €</span> TTC par stagiaire pour une inscription complète.<br>
+<small>(Inclut les repas du midi des 18 et 19 nov., et le repas du soir du 18 nov. Hors hébergement et transport).</small>
+</div>
+<div id="stagiairesContainer"></div>
+<button type="button" class="btn-add" onclick="addStagiaire()">+ Ajouter un stagiaire</button>
+<div class="buttons">
+<button type="button" class="btn-secondary" onclick="previousSection(2)">← Retour</button>
+<button type="button" class="btn-primary" onclick="nextSection(2)">Continuer vers la Logistique →</button>
+</div>
+</div>
+
+<!-- SECTION 3: LOGISTIQUE -->
+<div class="section" id="section3">
+<h2 class="section-title">🚌 Logistique & Transport</h2>
+<div class="sub-section">
+<div class="sub-section-title">Transport en car</div>
+<div class="form-group">
+<label>Les stagiaires utiliseront-ils le transport en car organisé par l'AAMB (le cas échéant) ?</label>
+<select name="transportBus">
+<option value="Non">Non, nous nous organisons par nos propres moyens</option>
+<option value="Oui">Oui, nous utiliserons le transport en car</option>
+</select>
+</div>
+</div>
+<div class="buttons">
+<button type="button" class="btn-secondary" onclick="previousSection(3)">← Retour</button>
+<button type="button" class="btn-primary" onclick="nextSection(3)">Continuer vers le Récapitulatif →</button>
+</div>
+</div>
+
+<!-- SECTION 4: RÉCAPITULATIF & CONVENTION -->
+<div class="section" id="section4">
+<h2 class="section-title">📝 Récapitulatif & Convention</h2>
+<div class="sub-section">
+<h3>Récapitulatif financier</h3>
+<p>Nombre de stagiaires : <strong id="recapCount">0</strong></p>
+<p>Tarif unitaire appliqué : <strong id="recapUnitPrice">0,00 €</strong></p>
+<div class="recap-total">
+<span>MONTANT TOTAL TTC :</span>
+<span class="recap-total-value" id="recapTotal">0,00 €</span>
+</div>
+</div>
+<div class="sub-section">
+<h3>Engagements & Convention</h3>
+<div class="checkbox-item">
+<input type="checkbox" id="acceptConvention" required>
+<label for="acceptConvention">
+<strong>J'accepte les conditions de la convention de formation professionnelle.</strong><br>
+<small>Je certifie que les stagiaires seront couverts par notre organisme employeur. J'ai pris connaissance des conditions d'annulation (rétractation 10 jours, force majeure, désistement < 30 jours = dû intégral). J'autorise l'AAMB à prendre des photos/vidéos des stagiaires pour la communication de l'événement.</small>
+</label>
+</div>
+</div>
+<div class="buttons">
+<button type="button" class="btn-secondary" onclick="previousSection(4)">← Retour</button>
+<button type="button" class="btn-primary" onclick="submitForm()">✓ Valider et générer la convention</button>
+</div>
+</div>
+
+<div class="success-message" id="successMessage" style="display:none; text-align:center; padding:40px;">
+<h2 style="color:#28a745;">✅ Dossier envoyé avec succès !</h2>
+<p>Un email de confirmation avec la convention PDF a été envoyé au référent facturation.</p>
+<button type="button" class="btn-primary" onclick="location.reload()" style="margin-top:20px;">Nouveau dossier</button>
+</div>
+</form>
+</div>
+</div>
+
+<div id="bonDeCommande"></div>
+
+<script>
+// --- CONFIGURATION ---
+const SCRIPT_URL = 'https://script.google.com/macros/s/VOTRE_NOUVEAU_DEPLOIEMENT_STAGIAIRE/exec'; // À REMPLACER
+const PRICE_EARLY = 700;
+const PRICE_LATE = 800;
+const DEADLINE = new Date('2026-07-01T00:00:00');
+const LOGO_URL = 'https://aamb-accescontrole.github.io/Inscription_partenaires/logo-aamb.png';
+
+let stagiaireCount = 0;
+
+// Déterminer le prix selon la date
+const currentPrice = new Date() < DEADLINE ? PRICE_EARLY : PRICE_LATE;
+document.getElementById('currentPrice').textContent = currentPrice.toFixed(2).replace('.', ',') + ' €';
+
+function addStagiaire(data = null) {
+    stagiaireCount++;
+    const container = document.getElementById('stagiairesContainer');
+    const div = document.createElement('div');
+    div.className = 'person-group';
+    div.id = `stagiaire_${stagiaireCount}`;
+    div.innerHTML = `
+        <button type="button" class="btn-remove" onclick="removeStagiaire(${stagiaireCount})">Supprimer</button>
+        <div class="person-title">Stagiaire ${stagiaireCount}</div>
+        <div class="inline-fields">
+            <div class="form-group"><label class="required">Nom</label><input type="text" name="s_nom_${stagiaireCount}" required></div>
+            <div class="form-group"><label class="required">Prénom</label><input type="text" name="s_prenom_${stagiaireCount}" required></div>
+            <div class="form-group"><label class="required">Grade / Fonction</label><input type="text" name="s_grade_${stagiaireCount}" required></div>
+            <div class="form-group"><label>Etablissement (si GHT)</label><input type="text" name="s_etab_${stagiaireCount}"></div>
+            <div class="form-group"><label class="required">Téléphone</label><input type="tel" name="s_tel_${stagiaireCount}" required></div>
+            <div class="form-group"><label class="required">Email</label><input type="email" name="s_email_${stagiaireCount}" required></div>
+            <div class="form-group"><label>N° Adhérent</label><input type="text" name="s_adherent_${stagiaireCount}"></div>
+            <div class="form-group">
+                <label>Régime alimentaire</label>
+                <select name="s_regime_${stagiaireCount}">
+                    <option value="Aucun">Aucun</option>
+                    <option value="Sans porc">Sans porc</option>
+                    <option value="Sans viande">Sans viande (Végétarien)</option>
+                    <option value="Sans gluten">Sans gluten</option>
+                    <option value="Autre">Autre (préciser)</option>
+                </select>
+            </div>
+        </div>
+    `;
+    container.appendChild(div);
+    if(data) {
+        Object.keys(data).forEach(k => {
+            const inp = div.querySelector(`[name="${k}"]`);
+            if(inp) inp.value = data[k];
+        });
+    }
+}
+
+function removeStagiaire(id) {
+    const el = document.getElementById(`stagiaire_${id}`);
+    if(el) el.remove();
+}
+
+function nextSection(current) {
+    // Validation basique
+    const currentSection = document.getElementById(`section${current}`);
+    const requiredFields = currentSection.querySelectorAll('[required]');
+    let valid = true;
+    requiredFields.forEach(field => {
+        if (!field.value.trim() && field.type !== 'checkbox') { valid = false; field.style.borderColor = '#e74c3c'; }
+        else if (field.type === 'checkbox' && !field.checked) { valid = false; alert('Veuillez accepter les conditions de la convention.'); }
+        else { field.style.borderColor = '#ddd'; }
+    });
+    if (!valid) { alert('Veuillez remplir tous les champs obligatoires.'); return; }
+
+    if (current === 3) updateRecap();
+    
+    document.getElementById(`section${current}`).classList.remove('active');
+    document.getElementById(`section${current + 1}`).classList.add('active');
+    document.getElementById('progressBar').style.width = ((current + 1) / 4 * 100) + '%';
+    window.scrollTo(0, 0);
+}
+
+function previousSection(current) {
+    document.getElementById(`section${current}`).classList.remove('active');
+    document.getElementById(`section${current - 1}`).classList.add('active');
+    document.getElementById('progressBar').style.width = ((current - 1) / 4 * 100) + '%';
+    window.scrollTo(0, 0);
+}
+
+function getStagiairesData() {
+    const groups = document.querySelectorAll('.person-group');
+    const stagiaires = [];
+    groups.forEach(g => {
+        const inputs = g.querySelectorAll('input, select');
+        const s = {};
+        inputs.forEach(i => s[i.name] = i.value);
+        if(s[`s_nom_${s.s_nom_1 ? 1 : ''}`] || Object.values(s).some(v => v)) { // Vérifie si vide
+             // Nettoyage des clés
+             const clean = {};
+             Object.keys(s).forEach(k => {
+                 clean[k.replace(/s_(nom|prenom|grade|etab|tel|email|adherent|regime)_\d+/, '$1')] = s[k];
+             });
+             if(clean.nom) stagiaires.push(clean);
+        }
+    });
+    return stagiaires;
+}
+
+function updateRecap() {
+    const stagiaires = getStagiairesData();
+    const count = stagiaires.length;
+    const total = count * currentPrice;
+    document.getElementById('recapCount').textContent = count;
+    document.getElementById('recapUnitPrice').textContent = currentPrice.toFixed(2).replace('.', ',') + ' €';
+    document.getElementById('recapTotal').textContent = total.toFixed(2).replace('.', ',') + ' €';
+}
+
+function generatePDF() {
+    // ... (Même logique html2canvas + jsPDF que la version partenaire, en adaptant le HTML généré)
+    // Pour simplifier, on génère le HTML de la convention ici.
+    const form = document.getElementById('stagiaireForm');
+    const data = Object.fromEntries(new FormData(form).entries());
+    const stagiaires = getStagiairesData();
+    
+    let stagiairesHTML = stagiaires.map((s, i) => `
+        <tr>
+            <td>${i+1}</td>
+            <td>${s.nom} ${s.prenom}</td>
+            <td>${s.grade}</td>
+            <td>${s.email}</td>
+            <td>${s.regime}</td>
+        </tr>
+    `).join('');
+
+    const total = stagiaires.length * currentPrice;
+    const dateStr = new Date().toLocaleDateString('fr-FR');
+
+    return `
+        <div style="border-bottom: 2px solid #0a4c6a; padding-bottom: 10px; margin-bottom: 20px; display: flex; justify-content: space-between;">
+            <img src="${LOGO_URL}" style="width: 100px;">
+            <div style="text-align: right;">
+                <h1 style="color: #0a4c6a; margin:0;">CONVENTION DE FORMATION</h1>
+                <p>44èmes JTB - Besançon 2026</p>
+                <p>Date : ${dateStr}</p>
+            </div>
+        </div>
+        <h3 style="color: #0a4c6a;">Établissement Employeur</h3>
+        <p><strong>${data.companyName}</strong><br>${data.billingAddress}<br>${data.billingZip} ${data.billingCity}</p>
+        <p>SIRET: ${data.billingSiret} | N° Commande: ${data.billingOrderNum || 'N/A'}</p>
+        <p>Contact facturation: ${data.billingContactName} (${data.billingContactEmail})</p>
+        
+        <h3 style="color: #0a4c6a; margin-top: 20px;">Liste des Stagiaires</h3>
+        <table style="width:100%; border-collapse: collapse; font-size: 11px;">
+            <tr style="background: #0a4c6a; color: white;">
+                <th style="padding: 8px;">#</th><th style="padding: 8px;">Nom / Prénom</th><th style="padding: 8px;">Grade</th><th style="padding: 8px;">Email</th><th style="padding: 8px;">Régime</th>
+            </tr>
+            ${stagiairesHTML}
+        </table>
+        
+        <div style="background: #0a4c6a; color: white; padding: 15px; margin-top: 20px; display: flex; justify-content: space-between; font-size: 16px;">
+            <span>MONTANT TOTAL À PAYER :</span>
+            <span style="font-weight: bold;">${total.toFixed(2).replace('.', ',')} € TTC</span>
+        </div>
+        <p style="margin-top: 20px; font-size: 10px; color: #666;">
+            Cette convention est établie en application de la formation professionnelle continue. 
+            Le règlement doit être effectué dans un délai d'un mois après la formation. 
+            Les stagiaires s'engagent à respecter le règlement intérieur et à émarger les feuilles de présence.
+        </p>
+        <div style="margin-top: 40px; display: flex; justify-content: space-between;">
+            <div style="width: 45%; border-top: 1px solid #333; padding-top: 10px; text-align: center;">
+                <p>Pour l'établissement (Cachet et signature)</p>
+            </div>
+            <div style="width: 45%; border-top: 1px solid #333; padding-top: 10px; text-align: center;">
+                <p>Pour l'AAMB (Frank MISTECKI, Président)</p>
+            </div>
+        </div>
+    `;
+}
+
+async function submitForm() {
+    const btn = document.querySelector('#section4 .btn-primary');
+    btn.innerText = 'Génération du PDF...';
+    btn.disabled = true;
+
+    try {
+        const pdfHTML = generatePDF();
+        const bonDiv = document.getElementById('bonDeCommande');
+        bonDiv.innerHTML = pdfHTML;
+        
+        await new Promise(r => setTimeout(r, 300));
+        const canvas = await html2canvas(bonDiv, { scale: 2, useCORS: true, backgroundColor: '#ffffff' });
+        const imgData = canvas.toDataURL('image/jpeg', 0.8);
+        
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const imgWidth = 210;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
+        
+        const pdfBase64 = pdf.output('datauristring');
+        
+        const stagiaires = getStagiairesData();
+        const formData = new FormData(document.getElementById('stagiaireForm'));
+        const data = Object.fromEntries(formData.entries());
+        
+        data.stagiaires = JSON.stringify(stagiaires);
+        data.totalAmount = stagiaires.length * currentPrice;
+        data.unitPrice = currentPrice;
+        data.timestamp = new Date().toISOString();
+        data.token = generateToken();
+        data.pdfBase64 = pdfBase64;
+
+        btn.innerText = 'Envoi en cours...';
+        
+        await fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify(data)
+        });
+
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.getElementById('successMessage').style.display = 'block';
+        window.scrollTo(0, 0);
+    } catch (e) {
+        console.error(e);
+        alert('Erreur lors de l\'envoi.');
+        btn.innerText = '✓ Valider et générer la convention';
+        btn.disabled = false;
+    }
+}
+
+function generateToken() {
+    return 'STAG-xxxx-xxxx-xxxx'.replace(/x/g, () => Math.floor(Math.random() * 16).toString(16));
+}
+
+// Init
+document.addEventListener('DOMContentLoaded', () => { addStagiaire(); });
+</script>
+</body>
+</html>
