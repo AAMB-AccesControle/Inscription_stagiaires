@@ -59,7 +59,7 @@ button { padding: 14px 30px; border: none; border-radius: 8px; font-size: 16px; 
 <div class="container">
 <div class="header">
 <div class="header-logo-wrapper"><img src="logo-aamb.png" alt="Logo AAMB"></div>
-<h1>AAMB - JTB 2026 - Besançon v0.03</h1>
+<h1>AAMB - JTB 2026 - Besançon v0.04</h1>
 <p class="subtitle">Formulaire d'Inscription Stagiaire</p>
 </div>
 <div class="form-container">
@@ -133,7 +133,7 @@ button { padding: 14px 30px; border: none; border-radius: 8px; font-size: 16px; 
 
 <!-- SECTION 4 -->
 <div class="section" id="section4">
-<h2 class="section-title">📝 Récapitulatif & Convention</h2>
+<h2 class="section-title"> Récapitulatif & Convention</h2>
 <div class="sub-section">
 <h3>Récapitulatif financier</h3>
 <p>Nombre de stagiaires : <strong id="recapCount">0</strong></p>
@@ -188,17 +188,18 @@ function addStagiaire() {
     const div = document.createElement('div');
     div.className = 'person-group';
     div.id = 'stagiaire_' + stagiaireCount;
+    div.setAttribute('data-stagiaire-id', stagiaireCount);
     div.innerHTML = '<button type="button" class="btn-remove" onclick="removeStagiaire(' + stagiaireCount + ')">Supprimer</button>' +
         '<div class="person-title">Stagiaire ' + stagiaireCount + '</div>' +
         '<div class="inline-fields">' +
-        '<div class="form-group"><label class="required">Nom</label><input type="text" name="s_nom_' + stagiaireCount + '" required></div>' +
-        '<div class="form-group"><label class="required">Prénom</label><input type="text" name="s_prenom_' + stagiaireCount + '" required></div>' +
-        '<div class="form-group"><label class="required">Grade / Fonction</label><input type="text" name="s_grade_' + stagiaireCount + '" required></div>' +
-        '<div class="form-group"><label>Établissement (si GHT)</label><input type="text" name="s_etab_' + stagiaireCount + '"></div>' +
-        '<div class="form-group"><label class="required">Téléphone</label><input type="tel" name="s_tel_' + stagiaireCount + '" required></div>' +
-        '<div class="form-group"><label class="required">Email</label><input type="email" name="s_email_' + stagiaireCount + '" required></div>' +
-        '<div class="form-group"><label>N° Adhérent</label><input type="text" name="s_adherent_' + stagiaireCount + '"></div>' +
-        '<div class="form-group"><label>Régime alimentaire</label><select name="s_regime_' + stagiaireCount + '"><option value="Aucun">Aucun</option><option value="Sans porc">Sans porc</option><option value="Sans viande">Végétarien</option><option value="Sans gluten">Sans gluten</option><option value="Autre">Autre</option></select></div>' +
+        '<div class="form-group"><label class="required">Nom</label><input type="text" class="stag-nom" required></div>' +
+        '<div class="form-group"><label class="required">Prénom</label><input type="text" class="stag-prenom" required></div>' +
+        '<div class="form-group"><label class="required">Grade / Fonction</label><input type="text" class="stag-grade" required></div>' +
+        '<div class="form-group"><label>Établissement (si GHT)</label><input type="text" class="stag-etab"></div>' +
+        '<div class="form-group"><label class="required">Téléphone</label><input type="tel" class="stag-tel" required></div>' +
+        '<div class="form-group"><label class="required">Email</label><input type="email" class="stag-email" required></div>' +
+        '<div class="form-group"><label>N° Adhérent</label><input type="text" class="stag-adherent"></div>' +
+        '<div class="form-group"><label>Régime alimentaire</label><select class="stag-regime"><option value="Aucun">Aucun</option><option value="Sans porc">Sans porc</option><option value="Sans viande">Végétarien</option><option value="Sans gluten">Sans gluten</option><option value="Autre">Autre</option></select></div>' +
         '</div>';
     container.appendChild(div);
     console.log('✅ Stagiaire ' + stagiaireCount + ' ajouté');
@@ -208,6 +209,51 @@ function removeStagiaire(id) {
     const el = document.getElementById('stagiaire_' + id);
     if (el) el.remove();
     console.log('🗑️ Stagiaire ' + id + ' supprimé');
+}
+
+function getStagiairesData() {
+    const groups = document.querySelectorAll('.person-group');
+    const stagiaires = [];
+    console.log('🔍 Nombre de groupes trouvés :', groups.length);
+    
+    groups.forEach((g, index) => {
+        const nom = g.querySelector('.stag-nom').value.trim();
+        const prenom = g.querySelector('.stag-prenom').value.trim();
+        const grade = g.querySelector('.stag-grade').value.trim();
+        const etab = g.querySelector('.stag-etab').value.trim();
+        const tel = g.querySelector('.stag-tel').value.trim();
+        const email = g.querySelector('.stag-email').value.trim();
+        const adherent = g.querySelector('.stag-adherent').value.trim();
+        const regime = g.querySelector('.stag-regime').value;
+        
+        console.log('👤 Stagiaire ' + (index + 1) + ':', nom, prenom);
+        
+        if (nom && prenom) {
+            stagiaires.push({
+                nom: nom,
+                prenom: prenom,
+                grade: grade,
+                etab: etab,
+                tel: tel,
+                email: email,
+                adherent: adherent,
+                regime: regime
+            });
+        }
+    });
+    
+    console.log('✅ Total stagiaires valides :', stagiaires.length);
+    return stagiaires;
+}
+
+function updateRecap() {
+    const stagiaires = getStagiairesData();
+    const count = stagiaires.length;
+    const total = count * currentPrice;
+    document.getElementById('recapCount').textContent = count;
+    document.getElementById('recapUnitPrice').textContent = currentPrice.toFixed(2).replace('.', ',') + ' €';
+    document.getElementById('recapTotal').textContent = total.toFixed(2).replace('.', ',') + ' €';
+    console.log('💰 Récap mis à jour :', count, 'stagiaires,', total, '€');
 }
 
 function nextSection(current) {
@@ -243,6 +289,20 @@ function nextSection(current) {
         return;
     }
     
+    // Si on passe de la section 2 à 3, vérifier qu'il y a au moins 1 stagiaire
+    if (current === 2) {
+        const stagiaires = getStagiairesData();
+        if (stagiaires.length === 0) {
+            alert('⚠️ Veuillez ajouter au moins un stagiaire avec nom et prénom.');
+            return;
+        }
+    }
+    
+    // Si on passe de la section 3 à 4, mettre à jour le récapitulatif
+    if (current === 3) {
+        updateRecap();
+    }
+    
     console.log('✅ Validation OK, passage à la section ' + (current + 1));
     currentSection.classList.remove('active');
     document.getElementById('section' + (current + 1)).classList.add('active');
@@ -257,38 +317,6 @@ function previousSection(current) {
     window.scrollTo(0, 0);
 }
 
-function getStagiairesData() {
-    const groups = document.querySelectorAll('.person-group');
-    const stagiaires = [];
-    groups.forEach(g => {
-        const inputs = g.querySelectorAll('input, select');
-        const s = {};
-        inputs.forEach(i => s[i.name] = i.value);
-        const id = g.id.split('_')[1];
-        const clean = {
-            nom: s['s_nom_' + id] || '',
-            prenom: s['s_prenom_' + id] || '',
-            grade: s['s_grade_' + id] || '',
-            etab: s['s_etab_' + id] || '',
-            tel: s['s_tel_' + id] || '',
-            email: s['s_email_' + id] || '',
-            adherent: s['s_adherent_' + id] || '',
-            regime: s['s_regime_' + id] || 'Aucun'
-        };
-        if (clean.nom && clean.prenom) stagiaires.push(clean);
-    });
-    return stagiaires;
-}
-
-function updateRecap() {
-    const stagiaires = getStagiairesData();
-    const count = stagiaires.length;
-    const total = count * currentPrice;
-    document.getElementById('recapCount').textContent = count;
-    document.getElementById('recapUnitPrice').textContent = currentPrice.toFixed(2).replace('.', ',') + ' €';
-    document.getElementById('recapTotal').textContent = total.toFixed(2).replace('.', ',') + ' €';
-}
-
 function generateToken() {
     return 'STAG-' + Math.random().toString(36).substr(2, 9).toUpperCase();
 }
@@ -296,7 +324,7 @@ function generateToken() {
 async function submitForm() {
     const checkbox = document.getElementById('acceptConvention');
     if (!checkbox.checked) {
-        alert('⚠️ Vous devez accepter les conditions de la convention.');
+        alert('️ Vous devez accepter les conditions de la convention.');
         return;
     }
     
@@ -311,14 +339,23 @@ async function submitForm() {
     btn.disabled = true;
 
     try {
+        // Récupérer les données du formulaire
         const form = document.getElementById('stagiaireForm');
         const formData = new FormData(form);
-        const data = Object.fromEntries(formData.entries());
+        const data = {};
+        formData.forEach((value, key) => {
+            data[key] = value;
+        });
         
         const total = stagiaires.length * currentPrice;
         const dateStr = new Date().toLocaleDateString('fr-FR');
         const token = generateToken();
 
+        console.log('📄 Génération du PDF...');
+        console.log(' Données:', data);
+        console.log(' Stagiaires:', stagiaires);
+
+        // Générer le HTML du PDF
         let stagiairesHTML = stagiaires.map((s, i) => 
             '<tr><td style="padding:5px;border:1px solid #ddd;">' + (i+1) + '</td>' +
             '<td style="padding:5px;border:1px solid #ddd;">' + s.nom + ' ' + s.prenom + '</td>' +
@@ -361,6 +398,7 @@ async function submitForm() {
         
         const pdfBase64 = pdf.output('datauristring');
         
+        // Ajouter les données des stagiaires
         data.stagiaires = JSON.stringify(stagiaires);
         data.totalAmount = total;
         data.unitPrice = currentPrice;
@@ -368,6 +406,7 @@ async function submitForm() {
         data.token = token;
         data.pdfBase64 = pdfBase64;
 
+        console.log('📤 Envoi des données...');
         btn.innerText = 'Envoi en cours...';
         
         await fetch(SCRIPT_URL, {
@@ -377,11 +416,12 @@ async function submitForm() {
             body: JSON.stringify(data)
         });
 
+        console.log('✅ Envoi terminé');
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.getElementById('successMessage').classList.add('show');
         window.scrollTo(0, 0);
     } catch (e) {
-        console.error(e);
+        console.error('❌ Erreur:', e);
         alert('Erreur : ' + e.message);
         btn.innerText = '✓ Valider et générer la convention';
         btn.disabled = false;
