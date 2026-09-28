@@ -1,0 +1,15 @@
+{
+  "name": "Inscription Stagiaire AAMB 2026",
+  "short_name": "Inscrip. Stagiaire",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0a4c6a",
+  "icons": [
+    {
+      "src": "logo-aamb.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
