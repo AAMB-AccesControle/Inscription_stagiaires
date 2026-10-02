@@ -59,7 +59,7 @@ button { padding: 14px 30px; border: none; border-radius: 8px; font-size: 16px; 
 <div class="container">
 <div class="header">
 <div class="header-logo-wrapper"><img src="logo-aamb.png" alt="Logo AAMB"></div>
-<h1>AAMB - JTB 2026 - Besançon v0.06</h1>
+<h1>AAMB - JTB 2026 - Besançon v0.07</h1>
 <p class="subtitle">Formulaire d'Inscription Stagiaire</p>
 </div>
 <div class="form-container">
@@ -161,8 +161,10 @@ button { padding: 14px 30px; border: none; border-radius: 8px; font-size: 16px; 
 
 <div class="success-message" id="successMessage">
 <h2 style="color:#28a745;">✅ Dossier envoyé avec succès !</h2>
-<p>Un email de confirmation avec la convention PDF a été envoyé au référent facturation.</p>
-<button type="button" class="btn-primary" onclick="location.reload()" style="margin-top:20px;">Nouveau dossier</button>
+<p style="font-size:16px; margin-top:15px;">Un email de confirmation avec la convention PDF a été envoyé au référent facturation.</p>
+<p style="margin-top:20px; color:#666; font-size:14px;">
+Pour modifier, ajouter ou supprimer des stagiaires, utilisez le lien présent dans l'email de confirmation.
+</p>
 </div>
 </form>
 </div>
@@ -172,7 +174,7 @@ button { padding: 14px 30px; border: none; border-radius: 8px; font-size: 16px; 
 
 <script>
 // ⚠️ REMPLACE CETTE URL PAR TON URL APPS SCRIPT
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwo83pAvQ1XXV-VgGBFUvmaR9yba-7VWhUwN43vaPKnAiS_QxmHRr0RlYgmFeGC1J7l/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbymvNEeud6Htq753M5ytDfBq57TnuScB3eecRYTsoyvhmQ4VFQAzmPiklXiQxp3BNhK/exec';
 const PRICE_EARLY = 700;
 const PRICE_LATE = 800;
 const DEADLINE = new Date('2026-07-01T00:00:00');
